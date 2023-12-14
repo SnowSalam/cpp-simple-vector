@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <cassert>
 #include <initializer_list>
 #include <stdexcept>
 #include <utility>
@@ -69,11 +70,13 @@ public:
 
     // Возвращает ссылку на элемент с индексом index
     Type& operator[](size_t index) noexcept {
+        assert(index < size_);
         return items_[index];
     }
 
     // Возвращает константную ссылку на элемент с индексом index
     const Type& operator[](size_t index) const noexcept {
+        assert(index < size_);
         return items_[index];
     }
 
@@ -134,6 +137,8 @@ public:
 
     // Удаляет элемент вектора в указанной позиции
     Iterator Erase(ConstIterator pos) {
+        assert(pos >= begin() && pos < end());
+
         size_t index = pos - cbegin();
         std::move(begin() + index + 1, end(), begin() + index);
         --size_;
@@ -155,6 +160,7 @@ public:
     // Если перед вставкой значения вектор был заполнен полностью,
     // вместимость вектора должна увеличиться вдвое, а для вектора вместимостью 0 стать равной 1
     Iterator Insert(ConstIterator pos, const Type& value) {
+        assert(pos >= begin() && pos <= end());
         size_t index = pos - begin();
 
         if (capacity_ == 0) {
@@ -183,6 +189,7 @@ public:
     }
 
     Iterator Insert(Iterator pos, Type&& value) {
+        assert(pos >= begin() && pos <= end());
         size_t index = pos - begin();
 
         if (capacity_ == 0) {

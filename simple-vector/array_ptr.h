@@ -20,6 +20,10 @@ public:
     //  онструктор из сырого указател€, хран€щего адрес массива в куче либо nullptr
     explicit ArrayPtr(Type* raw_ptr) noexcept : raw_ptr_(raw_ptr) {}
 
+    ArrayPtr(ArrayPtr<Type>&& other) {
+        std::swap(Get(), other.Get());
+    }
+
     // «апрещаем копирование
     ArrayPtr(const ArrayPtr&) = delete;
 
@@ -29,6 +33,13 @@ public:
 
     // «апрещаем присваивание
     ArrayPtr& operator=(const ArrayPtr&) = delete;
+
+    ArrayPtr& operator=(ArrayPtr<Type>&& other) {
+        if (&this != &other) {
+            std::swap(Get(), other.Get());
+        }
+        return *this;
+    }
 
     // ѕрекращает владением массивом в пам€ти, возвращает значение адреса массива
     // ѕосле вызова метода указатель на массив должен обнулитьс€
