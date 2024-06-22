@@ -1,15 +1,15 @@
-#include <algorithm>
+п»ї#include <algorithm>
 #include <cassert>
 #include <cstdlib>
 
 template <typename Type>
 class ArrayPtr {
 public:
-    // Инициализирует ArrayPtr нулевым указателем
+    // РРЅРёС†РёР°Р»РёР·РёСЂСѓРµС‚ ArrayPtr РЅСѓР»РµРІС‹Рј СѓРєР°Р·Р°С‚РµР»РµРј
     ArrayPtr() = default;
 
-    // Создаёт в куче массив из size элементов типа Type.
-    // Если size == 0, поле raw_ptr_ должно быть равно nullptr
+    // РЎРѕР·РґР°С‘С‚ РІ РєСѓС‡Рµ РјР°СЃСЃРёРІ РёР· size СЌР»РµРјРµРЅС‚РѕРІ С‚РёРїР° Type.
+    // Р•СЃР»Рё size == 0, РїРѕР»Рµ raw_ptr_ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ СЂР°РІРЅРѕ nullptr
     explicit ArrayPtr(size_t size) {
         if (size == 0) {}
         else {
@@ -17,21 +17,21 @@ public:
         }
     }
 
-    // Конструктор из сырого указателя, хранящего адрес массива в куче либо nullptr
+    // РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РёР· СЃС‹СЂРѕРіРѕ СѓРєР°Р·Р°С‚РµР»СЏ, С…СЂР°РЅСЏС‰РµРіРѕ Р°РґСЂРµСЃ РјР°СЃСЃРёРІР° РІ РєСѓС‡Рµ Р»РёР±Рѕ nullptr
     explicit ArrayPtr(Type* raw_ptr) noexcept : raw_ptr_(raw_ptr) {}
 
     ArrayPtr(ArrayPtr<Type>&& other) {
         std::swap(Get(), other.Get());
     }
 
-    // Запрещаем копирование
+    // Р—Р°РїСЂРµС‰Р°РµРј РєРѕРїРёСЂРѕРІР°РЅРёРµ
     ArrayPtr(const ArrayPtr&) = delete;
 
     ~ArrayPtr() {
         delete[] raw_ptr_;
     }
 
-    // Запрещаем присваивание
+    // Р—Р°РїСЂРµС‰Р°РµРј РїСЂРёСЃРІР°РёРІР°РЅРёРµ
     ArrayPtr& operator=(const ArrayPtr&) = delete;
 
     ArrayPtr& operator=(ArrayPtr<Type>&& other) {
@@ -41,43 +41,38 @@ public:
         return *this;
     }
 
-    // Прекращает владением массивом в памяти, возвращает значение адреса массива
-    // После вызова метода указатель на массив должен обнулиться
+    // РџСЂРµРєСЂР°С‰Р°РµС‚ РІР»Р°РґРµРЅРёРµРј РјР°СЃСЃРёРІРѕРј РІ РїР°РјСЏС‚Рё, РІРѕР·РІСЂР°С‰Р°РµС‚ Р·РЅР°С‡РµРЅРёРµ Р°РґСЂРµСЃР° РјР°СЃСЃРёРІР°
+    // РџРѕСЃР»Рµ РІС‹Р·РѕРІР° РјРµС‚РѕРґР° СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РјР°СЃСЃРёРІ РґРѕР»Р¶РµРЅ РѕР±РЅСѓР»РёС‚СЊСЃСЏ
     [[nodiscard]] Type* Release() noexcept {
         auto temp = raw_ptr_;
         raw_ptr_ = nullptr;
         return temp;
     }
 
-    // Возвращает ссылку на элемент массива с индексом index
+    // Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃСЃС‹Р»РєСѓ РЅР° СЌР»РµРјРµРЅС‚ РјР°СЃСЃРёРІР° СЃ РёРЅРґРµРєСЃРѕРј index
     Type& operator[](size_t index) noexcept {
         return *(raw_ptr_ + index);
     }
 
-    // Возвращает константную ссылку на элемент массива с индексом index
+    // Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРѕРЅСЃС‚Р°РЅС‚РЅСѓСЋ СЃСЃС‹Р»РєСѓ РЅР° СЌР»РµРјРµРЅС‚ РјР°СЃСЃРёРІР° СЃ РёРЅРґРµРєСЃРѕРј index
     const Type& operator[](size_t index) const noexcept {
         return *(raw_ptr_ + index);
     }
 
-    // Возвращает true, если указатель ненулевой, и false в противном случае
+    // Р’РѕР·РІСЂР°С‰Р°РµС‚ true, РµСЃР»Рё СѓРєР°Р·Р°С‚РµР»СЊ РЅРµРЅСѓР»РµРІРѕР№, Рё false РІ РїСЂРѕС‚РёРІРЅРѕРј СЃР»СѓС‡Р°Рµ
     explicit operator bool() const {
         if (raw_ptr_ != nullptr) return true;
         else return false;
     }
 
-    // Возвращает значение сырого указателя, хранящего адрес начала массива
+    // Р’РѕР·РІСЂР°С‰Р°РµС‚ Р·РЅР°С‡РµРЅРёРµ СЃС‹СЂРѕРіРѕ СѓРєР°Р·Р°С‚РµР»СЏ, С…СЂР°РЅСЏС‰РµРіРѕ Р°РґСЂРµСЃ РЅР°С‡Р°Р»Р° РјР°СЃСЃРёРІР°
     Type* Get() const noexcept {
         return raw_ptr_;
     }
 
-    // Обменивается значениям указателя на массив с объектом other
+    // РћР±РјРµРЅРёРІР°РµС‚СЃСЏ Р·РЅР°С‡РµРЅРёСЏРј СѓРєР°Р·Р°С‚РµР»СЏ РЅР° РјР°СЃСЃРёРІ СЃ РѕР±СЉРµРєС‚РѕРј other
     void swap(ArrayPtr& other) noexcept {
         std::swap(raw_ptr_, other.raw_ptr_);
-        /*
-        auto temp = other.raw_ptr_;
-        other.raw_ptr_ = raw_ptr_;
-        raw_ptr_ = temp;
-        */
     }
 
 private:
